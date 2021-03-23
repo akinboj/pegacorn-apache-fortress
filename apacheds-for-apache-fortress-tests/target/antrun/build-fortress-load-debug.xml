@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="fortress-load-debug"  >
+<target name="fortress-load-debug" description="Startup load using runfdwp mode" if="debug">
+  <echo message="############### Run Fortress Ant script to load policy in debug mode ###############"/>
+  <java clonevm="true" fork="true" classname="org.apache.tools.ant.launch.Launcher" taskname="startAnt" failonerror="true" dir="/home/yemi/Documents/dev/Lingo/directory-fortress-core/src/docker/apacheds-for-apache-fortress-tests" timeout="600000">
+    <classpath location="./config/bootstrap/"/>
+    <classpath refid="maven.test.classpath"/>
+    <jvmarg value="-Xdebug"/>
+    <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=${debug}"/>
+    <sysproperty value="2.0.6-SNAPSHOT" key="version"/>
+    <sysproperty value="${tenant}" key="tenant"/>
+    <arg value="-buildfile"/>
+    <arg file="./${load.file}"/>
+  </java>
+</target>
+</project>
