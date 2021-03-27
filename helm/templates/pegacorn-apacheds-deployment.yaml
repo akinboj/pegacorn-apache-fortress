@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    fabric8.io/metrics-path: dashboard/file/camel-routes.json/?var-project={{ .Values.serviceName }}&var-version={{ .Values.imageTag }}
+  labels:
+    app: {{ .Values.serviceName }}
+    provider: fabric8
+    version: "{{ .Values.imageTag }}"
+    group: net.fhirbox.pegacorn
+  name: {{ .Values.serviceName }}
+spec:
+  replicas: {{ .Values.numOfPods | default 2 }}
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: {{ .Values.serviceName }}
+      provider: fabric8
+      group: net.fhirbox.pegacorn
+  template:
+    metadata:
+      annotations:
+        fabric8.io/metrics-path: dashboard/file/camel-routes.json/?var-project={{ .Values.serviceName }}&var-version={{ .Values.imageTag }}
+      labels:
+        app: {{ .Values.serviceName }}
+        provider: fabric8
+        version: "{{ .Values.imageTag }}"
+        group: net.fhirbox.pegacorn
+        date: "{{ date "20060102-150405" .Release.Time }}"
+    spec:
+      {{- if (.Values.acrSecretName) }} 
+      imagePullSecrets:
+        - name: {{ .Values.acrSecretName }}
+      {{- end }}
+      containers:
+      - env:
+        - name: MY_HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: MY_POD_SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: {{ .Values.dockerRepo }}pegacorn-apache-fortress:{{ .Values.imageTag }}            
+        imagePullPolicy: {{ .Values.imagePullPolicy | default "IfNotPresent" }}
+        livenessProbe:
+          tcpSocket:
+            port: 10389
+          initialDelaySeconds: 30
+        name: fusionpbx
+        ports:
+        - containerPort: 10389
+          name: ldap
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: 10389
+          initialDelaySeconds: 30          
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds | default 30 }}

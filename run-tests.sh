@@ -25,8 +25,8 @@ set -e
 set -x
 
 # startup docker container
-# docker pull apachedirectory/apacheds-for-apache-fortress-tests
-CONTAINER_ID=$(docker run -d -P pegacorn-apache-fortress:1.0.0-snapshot)
+docker pull akinboj/pegacorn-apache-fortress:1.0.0-snapshot
+CONTAINER_ID=$(docker run -d -P akinboj/pegacorn-apache-fortress:1.0.0-snapshot)
 CONTAINER_PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports "10389/tcp") 0).HostPort}}' $CONTAINER_ID)
 echo $CONTAINER_PORT
 
@@ -50,8 +50,9 @@ mvn install -Dload.file=./ldap/setup/refreshLDAPData.xml
 mvn test -Dtest=FortressJUnitTest
 
 # rerun tests to verify teardown APIs work
-#mvn test -Dtest=FortressJUnitTest
+# mvn test -Dtest=FortressJUnitTest
 
 # stop and delete docker container
 docker stop $CONTAINER_ID
 docker rm $CONTAINER_ID
+

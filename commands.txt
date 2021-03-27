@@ -1,0 +1,4 @@
+# ApacheDS LDAP server
+docker build --rm --build-arg IMAGE_BUILD_TIMESTAMP="%date% %time%" -t pegacorn-apache-fortress:1.0.0-snapshot .
+
+helm upgrade pegacorn-apacheds-site-a --install --namespace site-a --set serviceName=pegacorn-apacheds,imagePullPolicy=Never,imageTag=1.0.0-snapshot,numOfPods=1 helm
