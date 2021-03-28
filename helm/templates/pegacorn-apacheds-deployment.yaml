@@ -73,6 +73,9 @@ spec:
         - containerPort: 10389
           name: ldap
           protocol: TCP
+        - containerPort: 10636
+          name: ldap-ssl
+          protocol: TCP
         readinessProbe:
           tcpSocket:
             port: 10389

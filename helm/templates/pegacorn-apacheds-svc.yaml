@@ -27,6 +27,12 @@ spec:
     name: ldap
     protocol: TCP
     targetPort: 10389
+    nodePort: 32660
+  - port: 10636
+    name: ldap-ssl
+    protocol: TCP
+    targetPort: 10636
+    nodePort: 32661
   selector:
     app: {{ .Values.serviceName }}
     provider: fabric8
